@@ -1,0 +1,34 @@
+name: Build Dream APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout dreams
+      uses: actions/checkout@v4
+      
+    - name: Setup Java for dreams
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+      
+    - name: Build Dream APK
+      run: ./gradlew assembleDebug
+      
+    - name: Upload Dream APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: MyDream-App
+        path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 1
