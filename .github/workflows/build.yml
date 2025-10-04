@@ -15,26 +15,19 @@ jobs:
     - name: Setup Java
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '8'
         distribution: 'temurin'
         
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      
-    - name: Debug project structure
+    - name: Install Android SDK
       run: |
-        echo "=== هيكل المشروع ==="
-        find app -type f -name "*.kt" -o -name "*.java" -o -name "*.gradle" -o -name "*.xml"
-        echo "=== محتوى build.gradle ==="
-        cat app/build.gradle
+        yes | sdkmanager "platforms;android-34" "build-tools;34.0.0"
         
-    - name: Build APK with full logs
+    - name: Build APK
       run: |
         cd app
-        gradle clean assembleDebug --no-daemon --stacktrace --info
+        ../gradlew assembleDebug --no-daemon --stacktrace
         
     - name: Upload APK
-      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: MyDream-App
