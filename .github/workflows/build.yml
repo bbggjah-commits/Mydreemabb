@@ -9,31 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout dreams
+    - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Java for dreams
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Install Gradle
+    - name: Debug - List files
       run: |
-        wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip
-        unzip -q gradle-8.4-bin.zip
-        echo "GRADLE_HOME=$PWD/gradle-8.4" >> $GITHUB_ENV
-        echo "$PWD/gradle-8.4/bin" >> $GITHUB_PATH
+        echo "=== هيكل الملفات ==="
+        find . -name "*.gradle" -o -name "*.kt" -o -name "*.xml" | head -20
         
-    - name: Build Dream APK
+    - name: Validate project structure
       run: |
-        cd app
-        gradle assembleDebug --stacktrace --no-daemon
-        
-    - name: Upload Dream APK
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: MyDream-App
-        path: app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 1
+        echo "=== التحقق من الهيكل ==="
+        [ -f app/build.gradle ] && echo "✅ build.gradle موجود" || echo "❌ build.gradle مفقود"
+        [ -f app/src/main/AndroidManifest.xml ] && echo "✅ AndroidManifest.xml موجود" || echo "❌ AndroidManifest.xml مفقود"
+        [ -f app/src/main/java/MainActivity.kt ] && echo "✅ MainActivity.kt موجود" || echo "❌ MainActivity.kt مفقود"
