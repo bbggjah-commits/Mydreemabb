@@ -21,21 +21,21 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       
-    - name: Install Gradle
+    - name: Debug project structure
       run: |
-        wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip
-        unzip -q gradle-8.4-bin.zip
-        echo "GRADLE_HOME=$PWD/gradle-8.4" >> $GITHUB_ENV
-        echo "$PWD/gradle-8.4/bin" >> $GITHUB_PATH
+        echo "=== هيكل المشروع ==="
+        find app -type f -name "*.kt" -o -name "*.java" -o -name "*.gradle" -o -name "*.xml"
+        echo "=== محتوى build.gradle ==="
+        cat app/build.gradle
         
-    - name: Build APK
+    - name: Build APK with full logs
       run: |
         cd app
-        gradle assembleDebug --no-daemon --stacktrace
+        gradle clean assembleDebug --no-daemon --stacktrace --info
         
     - name: Upload APK
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: MyDream-App
         path: app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 1
