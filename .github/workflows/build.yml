@@ -18,14 +18,17 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Debug - List files
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
+    - name: Build APK
       run: |
-        echo "=== هيكل الملفات ==="
-        find . -name "*.gradle" -o -name "*.kt" -o -name "*.xml" | head -20
+        cd app
+        ./gradlew assembleDebug --no-daemon
         
-    - name: Validate project structure
-      run: |
-        echo "=== التحقق من الهيكل ==="
-        [ -f app/build.gradle ] && echo "✅ build.gradle موجود" || echo "❌ build.gradle مفقود"
-        [ -f app/src/main/AndroidManifest.xml ] && echo "✅ AndroidManifest.xml موجود" || echo "❌ AndroidManifest.xml مفقود"
-        [ -f app/src/main/java/MainActivity.kt ] && echo "✅ MainActivity.kt موجود" || echo "❌ MainActivity.kt مفقود"
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: MyDream-App
+        path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 1
